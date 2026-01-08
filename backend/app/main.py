@@ -1,0 +1,227 @@
+"""
+Main FastAPI application.
+"""
+import os
+import uuid
+from typing import List
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.models.schemas import (
+    QueryRequest, QueryResponse, UploadResponse, StatusResponse,
+    Entity, Relationship, GraphNode, GraphEdge, GraphData
+)
+from app.modules.preprocessing import preprocess_documents
+from app.modules.retrieval import EmbeddingModel, FAISSRetriever
+from app.modules.entity_extraction import EntityExtractor
+from app.modules.graph_builder import KnowledgeGraphBuilder
+from app.modules.answer_generator import AnswerGenerator
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="Explainable RAG with Knowledge Graphs",
+    description="A web application for RAG with knowledge graph explanations",
+    version="1.0.0"
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Global state for sessions (in-memory, for production use DB)
+sessions = {}
+
+# Initialize components
+embedding_model = EmbeddingModel()
+entity_extractor = EntityExtractor()
+answer_generator = AnswerGenerator()
+
+
+class RAGSession:
+    """Session object for managing uploaded documents and indices."""
+    
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+        self.retriever = FAISSRetriever(embedding_model)
+        self.chunks = []
+        self.sources = []
+        self.entities = []
+        self.entity_chunk_map = {}
+        self.graph_builder = KnowledgeGraphBuilder()
+
+
+@app.get("/status", response_model=StatusResponse)
+async def status():
+    """Health check endpoint."""
+    return StatusResponse(
+        status="healthy",
+        message="Explainable RAG system is running"
+    )
+
+
+@app.post("/upload", response_model=UploadResponse)
+async def upload(files: List[UploadFile] = File(...)):
+    """
+    Upload and process documents.
+    
+    Args:
+        files: List of PDF or text files
+        
+    Returns:
+        Upload response with index ID and chunk count
+    """
+    try:
+        if not files:
+            raise HTTPException(status_code=400, detail="No files provided")
+        
+        # Read file contents
+        file_contents = []
+        for file in files:
+            content = await file.read()
+            file_contents.append((content, file.filename))
+        
+        # Preprocess documents
+        chunks, sources = preprocess_documents(file_contents)
+        
+        if not chunks:
+            raise HTTPException(status_code=400, detail="No text extracted from files")
+        
+        # Create session
+        session_id = str(uuid.uuid4())
+        session = RAGSession(session_id)
+        session.chunks = chunks
+        session.sources = sources
+        
+        # Build retrieval index
+        session.retriever.build_index(chunks, sources)
+        
+        # Extract entities
+        session.entities, session.entity_chunk_map = entity_extractor.extract_from_chunks(chunks)
+        
+        # Build knowledge graph
+        session.graph_builder.build_graph(
+            session.entities,
+            session.entity_chunk_map,
+            chunks
+        )
+        
+        sessions[session_id] = session
+        
+        return UploadResponse(
+            status="success",
+            message=f"Successfully processed {len(chunks)} chunks from {len(files)} files",
+            index_id=session_id,
+            chunks_count=len(chunks)
+        )
+        
+    except Exception as e:
+        print(f"Upload error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/query", response_model=QueryResponse)
+async def query(request: QueryRequest):
+    """
+    Process query and return answer with explanations.
+    
+    Args:
+        request: Query request with query text and session ID
+        
+    Returns:
+        Query response with answer, entities, relationships, and graph
+    """
+    try:
+        # Get session
+        session_id = request.index_id
+        if not session_id or session_id not in sessions:
+            raise HTTPException(status_code=404, detail="Index not found. Please upload documents first.")
+        
+        session = sessions[session_id]
+        
+        if not session.retriever.is_indexed():
+            raise HTTPException(status_code=400, detail="Index not properly initialized")
+        
+        # Retrieve relevant chunks
+        retrieved_chunks, retrieved_sources, similarities = session.retriever.retrieve(
+            request.query,
+            k=request.top_k
+        )
+        
+        if not retrieved_chunks:
+            raise HTTPException(status_code=404, detail="No relevant documents found")
+        
+        # Generate answer
+        answer = answer_generator.generate(request.query, retrieved_chunks)
+        
+        # Extract entities from retrieved chunks
+        retrieved_entities = []
+        for chunk_idx, chunk in enumerate(retrieved_chunks):
+            from app.modules.entity_extraction import EntityExtractor
+            local_extractor = EntityExtractor()
+            entities = local_extractor.extract_entities(chunk)
+            for ent in entities:
+                retrieved_entities.append({
+                    'name': ent['name'],
+                    'type': ent['type'],
+                    'source_chunk_id': chunk_idx
+                })
+        
+        # Remove duplicates
+        seen = set()
+        unique_entities = []
+        for ent in retrieved_entities:
+            key = (ent['name'].lower(), ent['type'])
+            if key not in seen:
+                unique_entities.append(Entity(**ent))
+                seen.add(key)
+        
+        # Get relationships from graph
+        relationships = [
+            Relationship(
+                from_entity=rel['from_entity'],
+                to_entity=rel['to_entity'],
+                relation=rel['relation']
+            )
+            for rel in session.graph_builder.get_relationships()
+        ]
+        
+        # Get graph data
+        graph_data_dict = session.graph_builder.get_graph_data()
+        graph_nodes = [GraphNode(**node) for node in graph_data_dict['nodes']]
+        graph_edges = [GraphEdge(**edge) for edge in graph_data_dict['edges']]
+        graph_data = GraphData(nodes=graph_nodes, edges=graph_edges)
+        
+        return QueryResponse(
+            answer=answer,
+            entities=unique_entities,
+            relationships=relationships,
+            graph_data=graph_data,
+            snippets=retrieved_chunks,
+            status="success"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Query error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/clear")
+async def clear_session(index_id: str):
+    """Clear a session."""
+    if index_id in sessions:
+        del sessions[index_id]
+        return {"status": "success", "message": "Session cleared"}
+    raise HTTPException(status_code=404, detail="Session not found")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
