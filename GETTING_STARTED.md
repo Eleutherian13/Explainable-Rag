@@ -14,11 +14,13 @@ This is a complete web application implementing **Explainable RAG with Knowledge
 ## 🚀 Quick Start (Docker - Recommended)
 
 ### 1. Navigate to Project
+
 ```bash
 cd c:\Users\manas\OneDrive\Desktop\Dataforge
 ```
 
 ### 2. Setup Environment
+
 ```bash
 # Copy environment template
 copy .env.example .env
@@ -28,6 +30,7 @@ copy .env.example .env
 ```
 
 ### 3. Start Services
+
 ```bash
 # Build and start both frontend and backend
 docker-compose up
@@ -40,6 +43,7 @@ docker-compose up
 ```
 
 ### 4. Access Application
+
 - **Frontend**: http://localhost:3000 (or http://localhost:3000)
 - **Backend API**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/docs
@@ -92,18 +96,22 @@ Configure API URL in `frontend/src/services/api.js` if needed.
 ## 📖 First Steps with the Application
 
 ### 1. Upload Documents
+
 1. Go to "Upload Documents" section
 2. Drag and drop PDF, TXT, or Markdown files
 3. Click "Upload & Index Documents"
 4. Wait for success message (shows index ID and chunk count)
 
 ### 2. Ask a Question
+
 1. In "Ask a Question" section, type your query
 2. Click "Submit Query"
 3. Wait for processing (usually 3-10 seconds)
 
 ### 3. View Results
+
 Results appear in tabs:
+
 - **Answer**: AI-generated answer grounded in documents
 - **Knowledge Graph**: Visual representation of entity relationships
 - **Entities**: Extracted entities (people, organizations, locations, etc.)
@@ -112,12 +120,14 @@ Results appear in tabs:
 ## 🧪 Testing
 
 ### Run Backend Tests
+
 ```bash
 cd backend
 pytest
 ```
 
 ### Run Backend Linting
+
 ```bash
 cd backend
 black . --check
@@ -153,20 +163,24 @@ Dataforge/
 ### Backend Configuration
 
 Edit `backend/app/main.py`:
+
 - Embedding model: `all-MiniLM-L6-v2` (line ~20)
 - LLM model: `gpt-4o-mini` (line ~21)
 - Default retrieval k: `5`
 
 Edit `backend/app/modules/preprocessing.py`:
+
 - Chunk size: `300` words (line ~61)
 - Chunk overlap: `50` words (line ~61)
 
 ### Frontend Configuration
 
 Edit `frontend/src/services/api.js`:
+
 - API base URL: `http://localhost:8000` (line ~3)
 
 Edit `frontend/.env` (if needed):
+
 ```
 VITE_API_URL=http://localhost:8000
 ```
@@ -176,18 +190,21 @@ VITE_API_URL=http://localhost:8000
 ### Backend Issues
 
 **Error: "ModuleNotFoundError: No module named 'spacy'"**
+
 ```bash
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
 
 **Port 8000 already in use**
+
 ```bash
 # Change port in docker-compose.yml or use:
 uvicorn app.main:app --port 8001
 ```
 
 **High memory usage**
+
 - Reduce chunk size in preprocessing.py
 - Clear old sessions via `/clear` endpoint
 - Limit file upload sizes
@@ -195,11 +212,13 @@ uvicorn app.main:app --port 8001
 ### Frontend Issues
 
 **Cannot connect to API**
+
 1. Check backend is running: `curl http://localhost:8000/status`
 2. Check CORS in `backend/app/main.py` (should allow all origins)
 3. Verify API URL in `frontend/src/services/api.js`
 
 **Module not found**
+
 ```bash
 cd frontend
 npm install
@@ -209,12 +228,14 @@ npm run dev
 ### Docker Issues
 
 **Build fails with "No space left on device"**
+
 ```bash
 docker system prune -a
 docker-compose build --no-cache
 ```
 
 **Container exits immediately**
+
 ```bash
 docker-compose logs backend
 docker-compose logs frontend
@@ -223,6 +244,7 @@ docker-compose logs frontend
 ## 📊 Example Workflow
 
 ### Upload Sample Documents
+
 ```bash
 # Create a sample document
 echo "Python is a programming language created by Guido van Rossum in 1991. It is used for web development, data science, and artificial intelligence." > sample.txt
@@ -232,6 +254,7 @@ curl -F "files=@sample.txt" http://localhost:8000/upload
 ```
 
 ### Submit Query
+
 ```bash
 # Using the browser UI:
 # Type: "Who created Python?"
@@ -264,6 +287,7 @@ curl -F "files=@sample.txt" http://localhost:8000/upload
 ## ✉️ Support
 
 If stuck:
+
 1. Check full README.md for detailed API docs
 2. Review logs: `docker-compose logs -f backend`
 3. Check browser DevTools (F12) for frontend errors

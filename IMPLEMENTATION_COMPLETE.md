@@ -9,6 +9,7 @@ A **complete, production-ready web application** has been built from your detail
 ## 📦 What Was Created
 
 ### Backend (Python + FastAPI)
+
 ```
 backend/
 ├── app/
@@ -37,6 +38,7 @@ backend/
 ```
 
 ### Frontend (React + Vite)
+
 ```
 frontend/
 ├── src/
@@ -63,6 +65,7 @@ frontend/
 ```
 
 ### Docker & Infrastructure
+
 ```
 ├── Dockerfile.backend                    # Backend containerization
 ├── Dockerfile.frontend                   # Frontend containerization
@@ -70,6 +73,7 @@ frontend/
 ```
 
 ### Configuration & Setup
+
 ```
 ├── .env.example                          # Environment template
 ├── .gitignore                            # Git ignore rules
@@ -79,6 +83,7 @@ frontend/
 ```
 
 ### Documentation
+
 ```
 ├── README.md                             # Comprehensive user guide (600+ lines)
 ├── GETTING_STARTED.md                    # Quick start guide (250+ lines)
@@ -93,22 +98,26 @@ frontend/
 ## 🚀 Quick Start
 
 ### Docker (Recommended)
+
 ```bash
 cd c:\Users\manas\OneDrive\Desktop\Dataforge
 docker-compose up
 ```
 
 Then open:
+
 - **Frontend**: http://localhost:3000
 - **API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
 
 ### Windows Batch Script
+
 ```bash
 start.bat
 ```
 
 ### Linux/Mac Shell Script
+
 ```bash
 chmod +x start.sh
 ./start.sh
@@ -119,6 +128,7 @@ chmod +x start.sh
 ## 📋 Key Features Implemented
 
 ### Core RAG Pipeline
+
 ✅ Document upload (PDF, TXT, MD)  
 ✅ Text preprocessing and chunking  
 ✅ Semantic embedding (SentenceTransformers)  
@@ -127,9 +137,10 @@ chmod +x start.sh
 ✅ Named entity recognition (spaCy)  
 ✅ Knowledge graph construction (NetworkX)  
 ✅ LLM-powered answer generation (OpenAI)  
-✅ Fallback heuristic answers  
+✅ Fallback heuristic answers
 
 ### User Interface
+
 ✅ Drag-and-drop document upload  
 ✅ Natural language query input  
 ✅ Answer with explanations  
@@ -139,35 +150,39 @@ chmod +x start.sh
 ✅ Error handling and alerts  
 ✅ Loading states  
 ✅ Responsive design  
-✅ Download results (JSON)  
+✅ Download results (JSON)
 
 ### API Endpoints
+
 ✅ `POST /upload` - Document ingestion  
 ✅ `POST /query` - Query processing  
 ✅ `GET /status` - Health check  
 ✅ `POST /clear` - Session management  
-✅ OpenAPI auto-documentation  
+✅ OpenAPI auto-documentation
 
 ### Testing & Quality
+
 ✅ Unit tests for all modules  
 ✅ Test fixtures and mocks  
 ✅ Code quality configuration (Black, Ruff)  
-✅ Type hints throughout  
+✅ Type hints throughout
 
 ### Documentation
+
 ✅ User README (600+ lines)  
 ✅ Getting started guide (250+ lines)  
 ✅ Architecture documentation (400+ lines)  
 ✅ API examples (Python)  
 ✅ Inline code comments  
 ✅ Configuration guides  
-✅ Troubleshooting guide  
+✅ Troubleshooting guide
 
 ---
 
 ## 💻 Tech Stack Summary
 
 ### Backend
+
 - Python 3.12+
 - FastAPI 0.110+
 - SentenceTransformers (embedding)
@@ -179,6 +194,7 @@ chmod +x start.sh
 - Pydantic (validation)
 
 ### Frontend
+
 - React 18+
 - Vite (build tool)
 - Tailwind CSS (styling)
@@ -188,6 +204,7 @@ chmod +x start.sh
 - Lucide React (icons)
 
 ### Infrastructure
+
 - Docker (containerization)
 - Docker Compose (orchestration)
 - Nginx ready (production)
@@ -196,54 +213,59 @@ chmod +x start.sh
 
 ## 📊 Code Statistics
 
-| Component | Files | LOC | Purpose |
-|-----------|-------|-----|---------|
-| Backend Core | 6 | ~1,000 | RAG pipeline |
-| Backend Modules | 5 | ~600 | Processing components |
-| Frontend Components | 6 | ~1,200 | UI components |
-| Tests | 4 | ~300 | Unit tests |
-| Documentation | 5 | ~2,500 | Guides and docs |
-| Config | 10 | ~200 | Build & deploy |
-| **Total** | **36** | **~6,000** | **Complete app** |
+| Component           | Files  | LOC        | Purpose               |
+| ------------------- | ------ | ---------- | --------------------- |
+| Backend Core        | 6      | ~1,000     | RAG pipeline          |
+| Backend Modules     | 5      | ~600       | Processing components |
+| Frontend Components | 6      | ~1,200     | UI components         |
+| Tests               | 4      | ~300       | Unit tests            |
+| Documentation       | 5      | ~2,500     | Guides and docs       |
+| Config              | 10     | ~200       | Build & deploy        |
+| **Total**           | **36** | **~6,000** | **Complete app**      |
 
 ---
 
 ## 🎯 Project Highlights
 
 ### Production Ready
+
 ✅ Error handling throughout  
 ✅ Input validation  
 ✅ Session management  
 ✅ Health checks  
 ✅ CORS protection  
-✅ Environment configuration  
+✅ Environment configuration
 
 ### Easy to Deploy
+
 ✅ Docker containerized  
 ✅ Docker Compose ready  
 ✅ Environment variable driven  
 ✅ Quick start scripts  
-✅ Health check endpoints  
+✅ Health check endpoints
 
 ### Easy to Extend
+
 ✅ Modular architecture  
 ✅ Clear separation of concerns  
 ✅ Well-documented code  
 ✅ Test coverage  
-✅ Configuration hooks  
+✅ Configuration hooks
 
 ### Developer Friendly
+
 ✅ Comprehensive documentation  
 ✅ Code examples  
 ✅ API client examples  
 ✅ Architecture diagrams  
-✅ Troubleshooting guides  
+✅ Troubleshooting guides
 
 ---
 
 ## 🔄 Next Steps
 
 ### To Run the Application
+
 1. Navigate to project folder
 2. Run `docker-compose up`
 3. Open http://localhost:3000
@@ -251,6 +273,7 @@ chmod +x start.sh
 5. Ask questions
 
 ### To Develop Locally
+
 1. Install Python 3.12+ and Node.js 20+
 2. Backend: `cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload`
 3. Frontend: `cd frontend && npm install && npm run dev`
@@ -258,12 +281,14 @@ chmod +x start.sh
 5. Backend at http://localhost:8000
 
 ### To Customize
+
 1. Change embedding model in `backend/app/modules/retrieval.py`
 2. Change LLM in `backend/app/modules/answer_generator.py`
 3. Adjust chunk size in `backend/app/modules/preprocessing.py`
 4. Modify UI in `frontend/src/components/`
 
 ### To Deploy
+
 1. Build Docker images: `docker-compose build`
 2. Push to registry: `docker push your-registry/image`
 3. Deploy to cloud platform (Heroku, AWS, Google Cloud, etc.)
@@ -272,14 +297,14 @@ chmod +x start.sh
 
 ## 📚 Documentation Map
 
-| Document | Audience | Content |
-|----------|----------|---------|
-| README.md | End users | How to use the app |
-| GETTING_STARTED.md | New users | Setup instructions |
-| ARCHITECTURE.md | Developers | Technical design |
-| PROJECT_SUMMARY.md | Stakeholders | Completion overview |
-| api_client_example.py | Developers | Code examples |
-| Inline comments | Developers | Implementation details |
+| Document              | Audience     | Content                |
+| --------------------- | ------------ | ---------------------- |
+| README.md             | End users    | How to use the app     |
+| GETTING_STARTED.md    | New users    | Setup instructions     |
+| ARCHITECTURE.md       | Developers   | Technical design       |
+| PROJECT_SUMMARY.md    | Stakeholders | Completion overview    |
+| api_client_example.py | Developers   | Code examples          |
+| Inline comments       | Developers   | Implementation details |
 
 ---
 
@@ -291,7 +316,7 @@ chmod +x start.sh
 ✅ No persistent sensitive data  
 ✅ File type validation  
 ✅ Clean error messages  
-✅ Rate limiting ready  
+✅ Rate limiting ready
 
 ---
 
@@ -307,6 +332,7 @@ chmod +x start.sh
 ## 🎓 Learning Resources
 
 The project includes:
+
 - Complete API documentation
 - Code examples
 - Architecture diagrams
@@ -330,9 +356,10 @@ The project includes:
 
 ## 🎉 You're All Set!
 
-The application is **complete and ready to use**. 
+The application is **complete and ready to use**.
 
 ### Start with:
+
 ```bash
 cd c:\Users\manas\OneDrive\Desktop\Dataforge
 docker-compose up
@@ -341,6 +368,7 @@ docker-compose up
 Then visit: **http://localhost:3000**
 
 ### For questions:
+
 - Check README.md
 - Read GETTING_STARTED.md
 - Review ARCHITECTURE.md

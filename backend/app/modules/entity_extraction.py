@@ -111,7 +111,7 @@ class EntityExtractor:
     
     def extract_noun_phrases(self, text: str) -> List[str]:
         """
-        Extract noun phrases from text.
+        Extract noun phrases from text (fallback method without spaCy).
         
         Args:
             text: Input text
@@ -119,6 +119,8 @@ class EntityExtractor:
         Returns:
             List of noun phrases
         """
-        doc = self.nlp(text)
-        noun_chunks = [chunk.text for chunk in doc.noun_chunks]
-        return noun_chunks
+        # Simple fallback: extract capitalized phrases
+        capitalized_pattern = r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
+        matches = re.finditer(capitalized_pattern, text)
+        noun_phrases = [match.group(1) for match in matches]
+        return list(set(noun_phrases))  # Remove duplicates

@@ -57,6 +57,7 @@ See README.md for detailed API documentation.
 ### Running the Application
 
 **Docker (Recommended)**:
+
 ```bash
 docker-compose up
 # Frontend: http://localhost:3000
@@ -64,6 +65,7 @@ docker-compose up
 ```
 
 **Local Development**:
+
 ```bash
 # Terminal 1: Backend
 cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload
@@ -75,11 +77,13 @@ cd frontend && npm install && npm run dev
 ### Adding Features
 
 **New Backend Endpoint**:
+
 1. Add schema in `backend/app/models/schemas.py`
 2. Create handler in `backend/app/main.py`
 3. Add tests in `backend/tests/`
 
 **New Frontend Component**:
+
 1. Create component in `frontend/src/components/`
 2. Import in relevant parent component
 3. Add to dashboard if needed
@@ -87,11 +91,13 @@ cd frontend && npm install && npm run dev
 ### Debugging
 
 **Backend**:
+
 - Check logs: `docker-compose logs backend`
 - FastAPI docs: http://localhost:8000/docs
 - Run tests: `cd backend && pytest -v`
 
 **Frontend**:
+
 - Browser DevTools (F12)
 - Check API responses in Network tab
 - React Developer Tools browser extension
@@ -99,12 +105,14 @@ cd frontend && npm install && npm run dev
 ### Code Quality
 
 **Backend**:
+
 ```bash
 cd backend
 black . --check && ruff check .
 ```
 
 **Frontend**:
+
 ```bash
 cd frontend
 npm run lint
@@ -125,6 +133,7 @@ npm run lint
 - **Total Latency**: 3-10s per query
 
 For large corpora, consider:
+
 - Adding Redis for embedding caching
 - Using GPU-accelerated FAISS (`faiss-gpu`)
 - Implementing result pagination
@@ -143,6 +152,7 @@ pytest tests/test_preprocessing.py::TestChunking::test_chunk_text_basic
 ## Deployment
 
 ### Docker Build
+
 ```bash
 docker build -f Dockerfile.backend -t rag-backend .
 docker build -f Dockerfile.frontend -t rag-frontend .

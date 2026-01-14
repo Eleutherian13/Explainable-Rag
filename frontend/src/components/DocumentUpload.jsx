@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Upload } from 'lucide-react';
-import { useAppStore } from '../store/appStore';
-import { uploadDocuments } from '../services/api';
+import React, { useState } from "react";
+import { Upload } from "lucide-react";
+import { useAppStore } from "../store/appStore";
+import { uploadDocuments } from "../services/api";
 
 export default function DocumentUpload() {
   const [dragActive, setDragActive] = useState(false);
@@ -13,9 +13,9 @@ export default function DocumentUpload() {
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -24,7 +24,7 @@ export default function DocumentUpload() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     const droppedFiles = [...e.dataTransfer.files];
     setFiles(droppedFiles);
   };
@@ -36,7 +36,7 @@ export default function DocumentUpload() {
 
   const handleUpload = async () => {
     if (files.length === 0) {
-      setError('Please select files first');
+      setError("Please select files first");
       return;
     }
 
@@ -49,7 +49,7 @@ export default function DocumentUpload() {
       setFiles([]);
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to upload documents');
+      setError(err.response?.data?.detail || "Failed to upload documents");
     } finally {
       setLoading(false);
     }
@@ -70,8 +70,8 @@ export default function DocumentUpload() {
           onDrop={handleDrop}
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
             dragActive
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 bg-gray-50 hover:border-gray-400"
           }`}
         >
           <input
@@ -101,7 +101,10 @@ export default function DocumentUpload() {
             <h3 className="font-semibold mb-2">Selected Files:</h3>
             <ul className="space-y-2">
               {files.map((file, idx) => (
-                <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                <li
+                  key={idx}
+                  className="text-sm text-gray-600 flex items-center gap-2"
+                >
                   <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                   {file.name}
                 </li>

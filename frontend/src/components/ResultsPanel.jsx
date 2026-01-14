@@ -1,8 +1,10 @@
-import React from 'react';
-import { Copy, Download, X } from 'lucide-react';
+import React from "react";
+import { Copy, Download, X, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function ResultsPanel({ results, onClose }) {
   const [copied, setCopied] = React.useState(false);
+  const [expandedAnswer, setExpandedAnswer] = React.useState(true);
+  const [expandedSnippets, setExpandedSnippets] = React.useState({});
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(results.answer);
@@ -12,18 +14,19 @@ export default function ResultsPanel({ results, onClose }) {
 
   const downloadResults = () => {
     const dataStr = JSON.stringify(results, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = 'results.json';
+    link.download = "results.json";
     link.click();
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-96 overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+      <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center z-10">
           <h3 className="text-xl font-bold">Query Results</h3>
           <button
             onClick={onClose}
@@ -33,67 +36,116 @@ export default function ResultsPanel({ results, onClose }) {
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
-          {/* Answer */}
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 p-6 space-y-6">
+          {/* Answer Section */}
           <section>
-            <h4 className="text-lg font-semibold mb-2">Answer</h4>
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-gray-800">{results.answer}</p>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-lg font-semibold">AI Answer</h4>
               <button
-                onClick={copyToClipboard}
-                className="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                onClick={() => setExpandedAnswer(!expandedAnswer)}
+                className="text-blue-600 hover:text-blue-800"
               >
-                <Copy className="w-4 h-4" />
-                {copied ? 'Copied!' : 'Copy answer'}
+                {expandedAnswer ? (
+                  <ChevronUp className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
               </button>
             </div>
+            {expandedAnswer && (
+              <div className="bg-blue-50 p-5 rounded-lg border-2 border-blue-200">
+                <p className="text-gray-800 whitespace-pre-wrap break-words leading-relaxed text-base">
+                  {results.answer}
+                </p>
+                <button
+                  onClick={copyToClipboard}
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-2 font-medium"
+                >
+                  <Copy className="w-4 h-4" />
+                  {copied ? "Copied!" : "Copy answer"}
+                </button>
+              </div>
+            )}
           </section>
 
-          {/* Entities */}
+          {/* Entities Section */}
           {results.entities && results.entities.length > 0 && (
             <section>
-              <h4 className="text-lg font-semibold mb-2">Extracted Entities</h4>
-              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+              <h4 className="text-lg font-semibold mb-3">
+                Key Information (Entities)
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
                 {results.entities.map((entity, idx) => (
                   <div
                     key={idx}
-                    className="bg-green-50 p-3 rounded border border-green-200 text-sm"
+                    className="bg-green-50 p-3 rounded-lg border border-green-200"
                   >
-                    <p className="font-semibold text-gray-800">{entity.name}</p>
-                    <p className="text-green-600 text-xs">{entity.type}</p>
+                    <p className="font-semibold text-gray-800 break-words">
+                      {entity.name}
+                    </p>
+                    <p className="text-green-600 text-xs mt-1 uppercase tracking-wide">
+                      {entity.type}
+                    </p>
                   </div>
                 ))}
               </div>
             </section>
           )}
 
-          {/* Snippets */}
+          {/* Source Snippets Section */}
           {results.snippets && results.snippets.length > 0 && (
             <section>
-              <h4 className="text-lg font-semibold mb-2">Source Snippets</h4>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
+              <h4 className="text-lg font-semibold mb-3">
+                Source Snippets ({results.snippets.length})
+              </h4>
+              <div className="space-y-2">
                 {results.snippets.map((snippet, idx) => (
                   <div
                     key={idx}
-                    className="bg-gray-50 p-3 rounded border border-gray-200 text-sm text-gray-700"
+                    className="border border-gray-300 rounded-lg overflow-hidden bg-white"
                   >
-                    <p className="line-clamp-3">{snippet}</p>
+                    <button
+                      onClick={() =>
+                        setExpandedSnippets((prev) => ({
+                          ...prev,
+                          [idx]: !prev[idx],
+                        }))
+                      }
+                      className="w-full p-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
+                    >
+                      <span className="text-sm text-gray-700 font-medium flex-1">
+                        Snippet {idx + 1}: {snippet.substring(0, 60).trim()}...
+                      </span>
+                      {expandedSnippets[idx] ? (
+                        <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0 ml-2" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0 ml-2" />
+                      )}
+                    </button>
+                    {expandedSnippets[idx] && (
+                      <div className="border-t border-gray-200 p-4 bg-gray-50">
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
+                          {snippet}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             </section>
           )}
+        </div>
 
-          {/* Action buttons */}
-          <div className="flex gap-2 pt-4 border-t">
-            <button
-              onClick={downloadResults}
-              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
-            >
-              <Download className="w-4 h-4" />
-              Download JSON
-            </button>
-          </div>
+        {/* Footer */}
+        <div className="border-t p-4 bg-gray-50">
+          <button
+            onClick={downloadResults}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 font-medium"
+          >
+            <Download className="w-4 h-4" />
+            Download Results as JSON
+          </button>
         </div>
       </div>
     </div>

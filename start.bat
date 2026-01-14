@@ -1,90 +1,60 @@
 @echo off
-REM Quick start script for Explainable RAG application (Windows)
+REM Start Dataforge Development Environment (Python 3.14+ Compatible)
+REM For local development without Docker
 
-echo ================================
-echo Explainable RAG - Quick Start
-echo ================================
+echo.
+echo ========================================
+echo   Dataforge - Application Startup
+echo ========================================
 echo.
 
-REM Check for Docker
-docker --version >nul 2>&1
+REM Check Python
+python --version >nul 2>&1
 if errorlevel 1 (
-    echo X Docker not found. Please install Docker Desktop.
+    echo ERROR: Python not found. Please install Python 3.12+
     pause
     exit /b 1
 )
 
-echo + Docker found
+echo + Python found
 
-REM Check for Docker Compose
-docker-compose --version >nul 2>&1
+REM Check Node.js
+node --version >nul 2>&1
 if errorlevel 1 (
-    echo X Docker Compose not found. Please install Docker Desktop.
+    echo ERROR: Node.js not found. Please install Node.js 20+
     pause
     exit /b 1
 )
 
-echo + Docker Compose found
-
-REM Check for .env file
-if not exist .env (
-    echo ! .env file not found. Creating from template...
-    copy .env.example .env
-    echo Please edit .env and add your OpenAI API key if desired
-    echo Then run this script again
-    echo.
-    echo To get your OpenAI API key:
-    echo   1. Go to https://platform.openai.com/account/api-keys
-    echo   2. Create a new secret key
-    echo   3. Add it to .env: OPENAI_API_KEY=sk-...
-    pause
-    exit /b 0
-)
-
-echo + .env file found
-
-REM Stop any existing containers
+echo + Node.js found
 echo.
-echo Stopping any existing containers...
-docker-compose down --remove-orphans >nul 2>&1
 
-REM Build images
+REM Start Backend
+echo [1/2] Starting Backend Server (port 8000)...
+start "Dataforge Backend" cmd /k "cd backend && set PYTHONPATH=. && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000"
+
+REM Wait for backend
+timeout /t 4 /nobreak
+
+REM Start Frontend
+echo [2/2] Starting Frontend Server (port 5173)...
+start "Dataforge Frontend" cmd /k "cd frontend && npm run dev"
+
+REM Wait for frontend
+timeout /t 3 /nobreak
+
 echo.
-echo Building Docker images...
-echo This may take 2-5 minutes on first run...
-docker-compose build
-
-REM Start services
+echo ========================================
+echo    ✓ Application Ready!
+echo ========================================
 echo.
-echo Starting services...
-docker-compose up -d
-
-REM Wait for services
+echo Frontend:  http://localhost:5173
+echo Backend:   http://localhost:8000
+echo API Docs:  http://localhost:8000/docs
 echo.
-echo Waiting for services to start...
-timeout /t 5 /nobreak
-
-REM Check status
+echo Close the terminal windows to stop.
 echo.
-echo Checking service status...
-
-setlocal enabledelayedexpansion
-set "attempts=0"
-
-:wait_loop
-if !attempts! geq 30 goto timeout
-set /a attempts=!attempts!+1
-
-echo Attempt !attempts!/30: Waiting for services...
-timeout /t 2 /nobreak
-
-goto wait_loop
-
-:timeout
-echo.
-echo ================================
-echo + Setup Complete!
-echo ================================
+pause
 echo.
 echo + Backend API is running
 echo   Location: http://localhost:8000

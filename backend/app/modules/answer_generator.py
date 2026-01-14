@@ -66,8 +66,11 @@ Answer:"""
                 temperature=0.3
             )
             
-            answer = response.choices[0].message.content.strip()
-            return answer
+            if response.choices and response.choices[0].message and response.choices[0].message.content:
+                answer = response.choices[0].message.content.strip()
+                return answer
+            else:
+                return self._generate_fallback(query, context_chunks)
             
         except APIError as e:
             print(f"OpenAI API error: {e}")
@@ -76,25 +79,46 @@ Answer:"""
     def _generate_fallback(self, query: str, context_chunks: List[str]) -> str:
         """
         Fallback answer generation without LLM.
+        Improved to provide diverse, complete answers.
         
         Args:
             query: User query
             context_chunks: Retrieved context chunks
             
         Returns:
-            Simple extraction-based answer
+            Full answer with complete content
         """
-        # Simple heuristic: return first chunk containing query keywords
-        query_words = set(query.lower().split())
+        if not context_chunks:
+            return "I cannot find relevant information in the provided documents."
+        
+        # Extract meaningful keywords (length > 2)
+        query_words = set(w.lower() for w in query.split() if len(w) > 2)
+        
+        # Score each chunk based on keyword overlap
+        best_chunk = None
+        best_score = -1
         
         for chunk in context_chunks:
-            chunk_words = set(chunk.lower().split())
+            chunk_words = set(w.lower() for w in chunk.split() if len(w) > 2)
             overlap = len(query_words & chunk_words)
-            if overlap > len(query_words) * 0.3:  # 30% word overlap
-                return chunk[:300] + "..."
+            if overlap > best_score:
+                best_score = overlap
+                best_chunk = chunk
         
-        # If no match, return first chunk
-        if context_chunks:
-            return context_chunks[0][:300] + "..."
+        # If no overlap found, use the most relevant chunk (first retrieved)
+        if best_chunk is None:
+            best_chunk = context_chunks[0]
         
-        return "I cannot find relevant information in the provided documents."
+        # Return FULL content, find good break point at sentence
+        if len(best_chunk) <= 1000:
+            return best_chunk.strip()
+        
+        # For longer chunks, find last complete sentence
+        truncated = best_chunk[:1200]
+        for end_marker in ['. ', '! ', '? ', '.\n', '!\n', '?\n']:
+            last_idx = truncated.rfind(end_marker)
+            if last_idx > 500:  # At least 500 chars
+                return best_chunk[:last_idx + 1].strip()
+        
+        # Fallback: return up to 1000 chars
+        return best_chunk[:1000].strip()

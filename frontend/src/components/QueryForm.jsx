@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Send } from 'lucide-react';
-import { useAppStore } from '../store/appStore';
-import { submitQuery } from '../services/api';
+import React, { useState } from "react";
+import { Send } from "lucide-react";
+import { useAppStore } from "../store/appStore";
+import { submitQuery } from "../services/api";
 
 export default function QueryForm() {
-  const [localQuery, setLocalQuery] = useState('');
+  const [localQuery, setLocalQuery] = useState("");
   const indexId = useAppStore((state) => state.indexId);
   const setResults = useAppStore((state) => state.setResults);
   const setLoading = useAppStore((state) => state.setLoading);
@@ -13,14 +13,14 @@ export default function QueryForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!indexId) {
-      setError('Please upload documents first');
+      setError("Please upload documents first");
       return;
     }
 
     if (!localQuery.trim()) {
-      setError('Please enter a query');
+      setError("Please enter a query");
       return;
     }
 
@@ -31,7 +31,7 @@ export default function QueryForm() {
       const result = await submitQuery(localQuery, indexId);
       setResults(result);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to process query');
+      setError(err.response?.data?.detail || "Failed to process query");
     } finally {
       setLoading(false);
     }

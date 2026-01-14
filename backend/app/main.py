@@ -37,10 +37,32 @@ app.add_middleware(
 # Global state for sessions (in-memory, for production use DB)
 sessions = {}
 
-# Initialize components
-embedding_model = EmbeddingModel()
-entity_extractor = EntityExtractor()
-answer_generator = AnswerGenerator()
+# Lazy initialization of components (on first use)
+embedding_model = None
+entity_extractor = None
+answer_generator = None
+
+def get_embedding_model():
+    """Lazily initialize embedding model on first use."""
+    global embedding_model
+    if embedding_model is None:
+        print("Initializing embedding model (this may take a moment)...")
+        embedding_model = EmbeddingModel()
+    return embedding_model
+
+def get_entity_extractor():
+    """Lazily initialize entity extractor on first use."""
+    global entity_extractor
+    if entity_extractor is None:
+        entity_extractor = EntityExtractor()
+    return entity_extractor
+
+def get_answer_generator():
+    """Lazily initialize answer generator on first use."""
+    global answer_generator
+    if answer_generator is None:
+        answer_generator = AnswerGenerator()
+    return answer_generator
 
 
 class RAGSession:
@@ -48,7 +70,7 @@ class RAGSession:
     
     def __init__(self, session_id: str):
         self.session_id = session_id
-        self.retriever = FAISSRetriever(embedding_model)
+        self.retriever = FAISSRetriever(get_embedding_model())
         self.chunks = []
         self.sources = []
         self.entities = []
@@ -102,7 +124,7 @@ async def upload(files: List[UploadFile] = File(...)):
         session.retriever.build_index(chunks, sources)
         
         # Extract entities
-        session.entities, session.entity_chunk_map = entity_extractor.extract_from_chunks(chunks)
+        session.entities, session.entity_chunk_map = get_entity_extractor().extract_from_chunks(chunks)
         
         # Build knowledge graph
         session.graph_builder.build_graph(
@@ -157,14 +179,13 @@ async def query(request: QueryRequest):
             raise HTTPException(status_code=404, detail="No relevant documents found")
         
         # Generate answer
-        answer = answer_generator.generate(request.query, retrieved_chunks)
+        answer = get_answer_generator().generate(request.query, retrieved_chunks)
         
         # Extract entities from retrieved chunks
         retrieved_entities = []
+        entity_extractor_instance = get_entity_extractor()
         for chunk_idx, chunk in enumerate(retrieved_chunks):
-            from app.modules.entity_extraction import EntityExtractor
-            local_extractor = EntityExtractor()
-            entities = local_extractor.extract_entities(chunk)
+            entities = entity_extractor_instance.extract_entities(chunk)
             for ent in entities:
                 retrieved_entities.append({
                     'name': ent['name'],
@@ -210,6 +231,38 @@ async def query(request: QueryRequest):
         raise
     except Exception as e:
         print(f"Query error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/debug/retrieve")
+async def debug_retrieve(request: QueryRequest):
+    """Debug endpoint to show retrieval results with similarities."""
+    try:
+        session_id = request.index_id
+        if not session_id or session_id not in sessions:
+            raise HTTPException(status_code=404, detail="Index not found")
+        
+        session = sessions[session_id]
+        
+        # Retrieve with details
+        retrieved_chunks, retrieved_sources, similarities = session.retriever.retrieve(
+            request.query,
+            k=request.top_k
+        )
+        
+        return {
+            "query": request.query,
+            "results": [
+                {
+                    "chunk": chunk[:200] + "..." if len(chunk) > 200 else chunk,
+                    "source": source,
+                    "similarity": sim,
+                    "full_length": len(chunk)
+                }
+                for chunk, source, sim in zip(retrieved_chunks, retrieved_sources, similarities)
+            ]
+        }
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 

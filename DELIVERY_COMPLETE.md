@@ -9,6 +9,7 @@ A **complete, production-ready web application** implementing the Explainable RA
 ## 📦 Deliverables Checklist
 
 ### Backend Application
+
 - ✅ FastAPI application with 4 REST endpoints
 - ✅ Document preprocessing module (chunking, cleaning)
 - ✅ FAISS vector retrieval system
@@ -21,6 +22,7 @@ A **complete, production-ready web application** implementing the Explainable RA
 - ✅ CORS support and health checks
 
 ### Frontend Application
+
 - ✅ React SPA with 6 main components
 - ✅ Drag-and-drop document upload interface
 - ✅ Natural language query form
@@ -35,6 +37,7 @@ A **complete, production-ready web application** implementing the Explainable RA
 - ✅ Responsive Tailwind CSS design
 
 ### Infrastructure
+
 - ✅ Dockerfile for backend (Python 3.12)
 - ✅ Dockerfile for frontend (Node 20)
 - ✅ Docker Compose orchestration
@@ -43,12 +46,14 @@ A **complete, production-ready web application** implementing the Explainable RA
 - ✅ Service dependencies
 
 ### Testing & Quality
+
 - ✅ 4 unit test modules (preprocessing, retrieval, entities, graphs)
 - ✅ pytest configuration
 - ✅ Code quality setup (Black, Ruff)
 - ✅ Type hints throughout codebase
 
 ### Documentation
+
 - ✅ **README.md** (600+ lines, user guide)
 - ✅ **GETTING_STARTED.md** (250+ lines, setup guide)
 - ✅ **ARCHITECTURE.md** (400+ lines, technical design)
@@ -60,6 +65,7 @@ A **complete, production-ready web application** implementing the Explainable RA
 - ✅ **.github/copilot-instructions.md** (developer guidelines)
 
 ### Setup & Deployment
+
 - ✅ **start.sh** (Linux/Mac quick start script)
 - ✅ **start.bat** (Windows quick start script)
 - ✅ **.env.example** (environment template)
@@ -69,34 +75,38 @@ A **complete, production-ready web application** implementing the Explainable RA
 
 ## 📊 Project Statistics
 
-| Category | Count | Details |
-|----------|-------|---------|
-| Backend Python Files | 9 | App + 5 modules + 3 utilities |
-| Frontend React Files | 8 | Components + store + services |
-| Test Files | 4 | Unit tests for each module |
-| Configuration Files | 10 | Docker, build, project configs |
-| Documentation Files | 9 | Comprehensive guides |
-| Total Files | 40+ | Complete application |
-| Lines of Code | 6,000+ | Backend + Frontend + Tests |
-| Lines of Documentation | 2,500+ | Guides, API docs, examples |
-| **Total Project** | **~8,500+** | **Lines across all files** |
+| Category               | Count       | Details                        |
+| ---------------------- | ----------- | ------------------------------ |
+| Backend Python Files   | 9           | App + 5 modules + 3 utilities  |
+| Frontend React Files   | 8           | Components + store + services  |
+| Test Files             | 4           | Unit tests for each module     |
+| Configuration Files    | 10          | Docker, build, project configs |
+| Documentation Files    | 9           | Comprehensive guides           |
+| Total Files            | 40+         | Complete application           |
+| Lines of Code          | 6,000+      | Backend + Frontend + Tests     |
+| Lines of Documentation | 2,500+      | Guides, API docs, examples     |
+| **Total Project**      | **~8,500+** | **Lines across all files**     |
 
 ---
 
 ## 🚀 How to Use
 
 ### 1. Run with Docker (Recommended)
+
 ```bash
 cd c:\Users\manas\OneDrive\Desktop\Dataforge
 docker-compose up
 ```
+
 Then open: http://localhost:3000
 
 ### 2. Run with Quick Start Script
+
 **Windows**: Double-click `start.bat`  
 **Linux/Mac**: Run `./start.sh`
 
 ### 3. Run Locally (for development)
+
 ```bash
 # Backend
 cd backend
@@ -115,6 +125,7 @@ npm run dev
 ## 🎯 Features Implemented
 
 ### Core Functionality
+
 ✅ Document upload (PDF, TXT, MD)  
 ✅ Text preprocessing and chunking  
 ✅ Semantic embeddings (SentenceTransformers)  
@@ -123,30 +134,33 @@ npm run dev
 ✅ Named entity recognition (spaCy)  
 ✅ Knowledge graph construction (NetworkX)  
 ✅ LLM-powered answers (OpenAI)  
-✅ Fallback heuristic answers  
+✅ Fallback heuristic answers
 
 ### User Experience
+
 ✅ Professional UI with Tailwind CSS  
 ✅ Responsive design (mobile-friendly)  
 ✅ Interactive graph visualization  
 ✅ Tabbed results interface  
 ✅ Error handling and alerts  
 ✅ Loading states and feedback  
-✅ Download results as JSON  
+✅ Download results as JSON
 
 ### API
+
 ✅ RESTful design  
 ✅ Proper HTTP status codes  
 ✅ Request validation  
 ✅ CORS support  
-✅ Auto-generated OpenAPI docs  
+✅ Auto-generated OpenAPI docs
 
 ### DevOps
+
 ✅ Docker containerization  
 ✅ Docker Compose orchestration  
 ✅ Environment-based configuration  
 ✅ Health checks  
-✅ Quick start scripts  
+✅ Quick start scripts
 
 ---
 
@@ -187,39 +201,39 @@ Dataforge/
 
 ## 🔧 Key Technologies
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Backend** | FastAPI | Web framework |
-| **Language** | Python 3.12 | Backend language |
-| **Embedding** | SentenceTransformers | Text vectorization |
-| **Search** | FAISS | Vector indexing |
-| **NER** | spaCy | Entity extraction |
-| **Graphs** | NetworkX | Graph construction |
-| **LLM** | OpenAI | Answer generation |
-| **Frontend** | React 18 | UI framework |
-| **Build** | Vite | Fast bundler |
-| **Styling** | Tailwind CSS | CSS framework |
-| **Graphs (UI)** | Cytoscape.js | Graph visualization |
-| **State** | Zustand | State management |
-| **Container** | Docker | Containerization |
+| Component       | Technology           | Purpose             |
+| --------------- | -------------------- | ------------------- |
+| **Backend**     | FastAPI              | Web framework       |
+| **Language**    | Python 3.12          | Backend language    |
+| **Embedding**   | SentenceTransformers | Text vectorization  |
+| **Search**      | FAISS                | Vector indexing     |
+| **NER**         | spaCy                | Entity extraction   |
+| **Graphs**      | NetworkX             | Graph construction  |
+| **LLM**         | OpenAI               | Answer generation   |
+| **Frontend**    | React 18             | UI framework        |
+| **Build**       | Vite                 | Fast bundler        |
+| **Styling**     | Tailwind CSS         | CSS framework       |
+| **Graphs (UI)** | Cytoscape.js         | Graph visualization |
+| **State**       | Zustand              | State management    |
+| **Container**   | Docker               | Containerization    |
 
 ---
 
 ## 📈 Performance Metrics
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Upload 5 files (1.5MB) | 10-15s | Includes processing |
-| Embed single chunk | ~100ms | SentenceTransformers |
-| Vector search (k=5) | ~50ms | FAISS |
-| Answer generation | 3-10s | Mostly LLM latency |
-| Total query | 3-10s | End-to-end |
+| Operation              | Time   | Notes                |
+| ---------------------- | ------ | -------------------- |
+| Upload 5 files (1.5MB) | 10-15s | Includes processing  |
+| Embed single chunk     | ~100ms | SentenceTransformers |
+| Vector search (k=5)    | ~50ms  | FAISS                |
+| Answer generation      | 3-10s  | Mostly LLM latency   |
+| Total query            | 3-10s  | End-to-end           |
 
-| Resource | Amount | Notes |
-|----------|--------|-------|
-| Memory per 1000 chunks | 4-6MB | In-memory storage |
-| FAISS Index size | ~1.5MB | Per 1000 chunks |
-| Docker image (backend) | ~800MB | With dependencies |
+| Resource                | Amount | Notes             |
+| ----------------------- | ------ | ----------------- |
+| Memory per 1000 chunks  | 4-6MB  | In-memory storage |
+| FAISS Index size        | ~1.5MB | Per 1000 chunks   |
+| Docker image (backend)  | ~800MB | With dependencies |
 | Docker image (frontend) | ~200MB | Production bundle |
 
 ---
@@ -232,42 +246,46 @@ Dataforge/
 ✅ File type validation  
 ✅ No persistent sensitive data  
 ✅ Clean error messages  
-✅ Rate limiting ready  
+✅ Rate limiting ready
 
 ---
 
 ## 📚 Documentation Quality
 
-| Document | Purpose | Lines | Quality |
-|----------|---------|-------|---------|
-| README.md | User guide | 600+ | Comprehensive |
-| GETTING_STARTED.md | Setup guide | 250+ | Clear steps |
-| ARCHITECTURE.md | Technical | 400+ | Detailed design |
-| api_client_example.py | Code examples | 250+ | Runnable |
-| Inline comments | Code clarity | Throughout | Well-documented |
+| Document              | Purpose       | Lines      | Quality         |
+| --------------------- | ------------- | ---------- | --------------- |
+| README.md             | User guide    | 600+       | Comprehensive   |
+| GETTING_STARTED.md    | Setup guide   | 250+       | Clear steps     |
+| ARCHITECTURE.md       | Technical     | 400+       | Detailed design |
+| api_client_example.py | Code examples | 250+       | Runnable        |
+| Inline comments       | Code clarity  | Throughout | Well-documented |
 
 ---
 
 ## ✨ Quality Assurance
 
 ✅ **Code Quality**
+
 - Type hints throughout
 - Comprehensive error handling
 - Clean, modular code
 - Code quality tooling (Black, Ruff)
 
 ✅ **Testing**
+
 - Unit tests for all modules
 - Test fixtures and mocks
 - Pytest configuration
 
 ✅ **Documentation**
+
 - 2,500+ lines of documentation
 - API examples provided
 - Architecture diagrams
 - Troubleshooting guides
 
 ✅ **Usability**
+
 - Quick start scripts
 - Docker Compose ready
 - Environment templates
@@ -278,6 +296,7 @@ Dataforge/
 ## 🎓 What You Can Do Now
 
 ### For Users
+
 1. ✅ Run the application with one command
 2. ✅ Upload documents in any format
 3. ✅ Ask natural language questions
@@ -286,6 +305,7 @@ Dataforge/
 6. ✅ Export results
 
 ### For Developers
+
 1. ✅ Understand the RAG architecture
 2. ✅ Modify components as needed
 3. ✅ Add new features
@@ -294,6 +314,7 @@ Dataforge/
 6. ✅ Scale horizontally
 
 ### For DevOps
+
 1. ✅ Deploy with Docker
 2. ✅ Configure with environment variables
 3. ✅ Monitor with health checks
@@ -305,24 +326,28 @@ Dataforge/
 ## 🚀 Next Steps
 
 ### Immediate (5 minutes)
+
 ```bash
 docker-compose up
 # Open http://localhost:3000
 ```
 
 ### Short-term (30 minutes)
+
 - Upload test documents
 - Ask questions
 - Explore the interface
 - Read the README
 
 ### Medium-term (1-2 hours)
+
 - Review ARCHITECTURE.md
 - Understand the code structure
 - Look at ARCHITECTURE_DIAGRAMS.md
 - Test the API with api_client_example.py
 
 ### Long-term (ongoing)
+
 - Customize for your needs
 - Add authentication
 - Deploy to production
@@ -333,17 +358,20 @@ docker-compose up
 ## 📞 Support Resources
 
 **Documentation**
+
 - README.md - Comprehensive guide
 - GETTING_STARTED.md - Setup help
 - ARCHITECTURE.md - Technical details
 - INDEX.md - Navigation guide
 
 **Code Examples**
+
 - api_client_example.py - Python usage
 - Inline comments - Implementation details
 - Test files - Usage patterns
 
 **Built-in Help**
+
 - OpenAPI docs: http://localhost:8000/docs
 - Error messages - Clear and actionable
 - Troubleshooting sections in docs
@@ -355,20 +383,23 @@ docker-compose up
 You have received a **complete, production-ready implementation** of the Explainable RAG with Knowledge Graphs web application.
 
 ### What's Included
+
 ✅ Fully functional backend and frontend  
 ✅ Docker containerization  
 ✅ Comprehensive documentation  
 ✅ Unit tests and quality tooling  
 ✅ Quick start scripts  
-✅ Code examples  
+✅ Code examples
 
 ### Ready To
+
 ✅ Run immediately  
 ✅ Deploy to production  
 ✅ Extend with new features  
-✅ Scale for growth  
+✅ Scale for growth
 
 ### Start With
+
 ```bash
 docker-compose up
 ```
@@ -387,15 +418,14 @@ Then visit: **http://localhost:3000**
 
 ## Quick Reference
 
-| Need | Location |
-|------|----------|
-| Setup help | GETTING_STARTED.md |
-| User guide | README.md |
-| Architecture | ARCHITECTURE.md |
-| Code examples | api_client_example.py |
-| Navigation | INDEX.md |
-| Navigation | INDEX.md |
-| Start the app | docker-compose up |
-| Run tests | cd backend && pytest |
+| Need          | Location                   |
+| ------------- | -------------------------- |
+| Setup help    | GETTING_STARTED.md         |
+| User guide    | README.md                  |
+| Architecture  | ARCHITECTURE.md            |
+| Code examples | api_client_example.py      |
+| Navigation    | INDEX.md                   |
+| Navigation    | INDEX.md                   |
+| Start the app | docker-compose up          |
+| Run tests     | cd backend && pytest       |
 | View API docs | http://localhost:8000/docs |
-

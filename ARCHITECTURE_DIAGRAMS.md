@@ -254,9 +254,9 @@ Step 4: Graph Extraction (Graph Builder Module)
 Step 5: Answer Generation (Answer Generator Module)
 ───────────────────────────────────────────────────
     Prepare prompt:
-    
+
     System: "Answer using ONLY context provided..."
-    
+
     Context: [join retrieved chunks]
     Question: [user query]
             ↓
@@ -309,16 +309,16 @@ In-Memory Session Storage
 ──────────────────────────
 
 sessions[uuid] = RAGSession {
-    
+
     session_id: "550e8400-..."
-    
+
     ┌─────────────────────────────────────┐
     │ FAISS Index                         │
     │ - Embeddings (float32, 384-dim)    │
     │ - Metadata pointers                 │
     │ Memory: ~1.5MB per 1000 chunks     │
     └─────────────────────────────────────┘
-    
+
     ┌─────────────────────────────────────┐
     │ Text Chunks Cache                   │
     │ - Original normalized text          │
@@ -326,27 +326,27 @@ sessions[uuid] = RAGSession {
     │ - Chunk indices                     │
     │ Memory: ~500KB-1MB per 1000 chunks │
     └─────────────────────────────────────┘
-    
+
     ┌─────────────────────────────────────┐
     │ Entities Dictionary                 │
     │ - Entity name → {type, source}     │
     │ - Chunk → entities mapping         │
     │ Memory: ~100-300KB per 1000 chunks │
     └─────────────────────────────────────┘
-    
+
     ┌─────────────────────────────────────┐
     │ NetworkX Knowledge Graph            │
     │ - Nodes: entities with metadata     │
     │ - Edges: relationships             │
     │ Memory: ~200-500KB per 1000 chunks │
     └─────────────────────────────────────┘
-    
+
     ┌─────────────────────────────────────┐
     │ Retriever Object                    │
     │ - Reference to FAISS index          │
     │ - Access to chunks & sources        │
     └─────────────────────────────────────┘
-    
+
     ┌─────────────────────────────────────┐
     │ Graph Builder Object                │
     │ - Compiled NetworkX graph           │
@@ -413,6 +413,7 @@ Total per session: ~4-6MB per 1000 chunks
 ---
 
 This architecture is:
+
 - ✅ **Modular**: Each component has a single responsibility
 - ✅ **Scalable**: Can be distributed across services
 - ✅ **Maintainable**: Clear separation of concerns

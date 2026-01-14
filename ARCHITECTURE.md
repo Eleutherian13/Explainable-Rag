@@ -52,43 +52,54 @@ This document provides comprehensive details about the architecture of the Expla
 ### 2.1 Frontend Components
 
 #### Dashboard.jsx
+
 **Purpose**: Main layout and state management  
 **Responsibilities**:
+
 - Render main UI sections (upload, query, results)
 - Tab switching between Answer/Graph/Entities views
 - Integration of child components
 
 **State Management**:
+
 - Uses Zustand store (`appStore.js`)
 - Global state: `indexId`, `results`, `loading`, `error`
 
 #### DocumentUpload.jsx
+
 **Purpose**: File upload interface  
 **Responsibilities**:
+
 - Drag-and-drop file handling
 - File selection validation
 - API call to `/upload` endpoint
 - Progress indication
 
 #### QueryForm.jsx
+
 **Purpose**: Query input and submission  
 **Responsibilities**:
+
 - Textarea for natural language queries
 - Form validation
 - API call to `/query` endpoint
 - Loading state management
 
 #### GraphVisualization.jsx
+
 **Purpose**: Interactive graph rendering  
 **Responsibilities**:
+
 - Convert graph data to Cytoscape format
 - Render interactive knowledge graph
 - Node styling and layout
 - Edge labeling with relationship types
 
 #### ResultsPanel.jsx
+
 **Purpose**: Results display and actions  
 **Responsibilities**:
+
 - Show generated answer
 - Display entities in table format
 - List source snippets
@@ -96,8 +107,10 @@ This document provides comprehensive details about the architecture of the Expla
 - Copy answer to clipboard
 
 #### ErrorAlert.jsx
+
 **Purpose**: Error notification  
 **Responsibilities**:
+
 - Display error messages
 - Auto-dismiss capability
 - Global error handling
@@ -105,15 +118,18 @@ This document provides comprehensive details about the architecture of the Expla
 ### 2.2 Backend Modules
 
 #### preprocessing.py
-**Purpose**: Document processing and chunking  
+
+**Purpose**: Document processing and chunking
 
 **Key Functions**:
+
 - `extract_text_from_pdf()`: Parse PDF files
 - `extract_text_from_file()`: Generic file extraction
 - `clean_text()`: Text normalization and sanitization
 - `chunk_text()`: Split into overlapping chunks
 
 **Parameters**:
+
 - Chunk size: 300 words (configurable)
 - Overlap: 50 words
 - Supported formats: PDF, TXT, MD
@@ -121,10 +137,13 @@ This document provides comprehensive details about the architecture of the Expla
 **Output**: List of normalized text chunks with source metadata
 
 #### retrieval.py
-**Purpose**: Vector-based semantic search  
+
+**Purpose**: Vector-based semantic search
 
 **Classes**:
+
 - `EmbeddingModel`: Wraps SentenceTransformers
+
   - Default model: `all-MiniLM-L6-v2`
   - Dimension: 384
   - Method: `encode(texts) → embeddings`
@@ -137,14 +156,17 @@ This document provides comprehensive details about the architecture of the Expla
     - `is_indexed()`: Check if index exists
 
 **Performance**:
+
 - Embedding: ~100ms per chunk
 - Retrieval: ~50ms per query
 - Memory: ~1.2MB per 1000 chunks
 
 #### entity_extraction.py
-**Purpose**: Named entity recognition  
+
+**Purpose**: Named entity recognition
 
 **Classes**:
+
 - `EntityExtractor`: spaCy-based NER
   - Model: `en_core_web_sm`
   - Recognized types: PERSON, ORG, LOC, GPE, PRODUCT, EVENT, etc.
@@ -156,9 +178,11 @@ This document provides comprehensive details about the architecture of the Expla
 **Output**: List of entities with type and source chunk
 
 #### graph_builder.py
-**Purpose**: Knowledge graph construction  
+
+**Purpose**: Knowledge graph construction
 
 **Classes**:
+
 - `KnowledgeGraphBuilder`: NetworkX-based graph management
   - Nodes: Entity names with metadata (type, source)
   - Edges: Relationships with types (co-occurs, verb-based)
@@ -168,6 +192,7 @@ This document provides comprehensive details about the architecture of the Expla
     - `get_relationships()`: Extract edge information
 
 **Graph Construction Logic**:
+
 1. Add all unique entities as nodes
 2. For each chunk:
    - Find entities in same chunk
@@ -180,9 +205,11 @@ This document provides comprehensive details about the architecture of the Expla
 **Output**: Cytoscape-compatible JSON with nodes and edges
 
 #### answer_generator.py
-**Purpose**: LLM-based answer generation  
+
+**Purpose**: LLM-based answer generation
 
 **Classes**:
+
 - `AnswerGenerator`: LLM integration with fallback
   - Primary: OpenAI API (gpt-4o-mini)
   - Fallback: Heuristic extraction
@@ -191,19 +218,21 @@ This document provides comprehensive details about the architecture of the Expla
     - `_generate_fallback()`: No-LLM alternative
 
 **Prompt Template**:
+
 ```
 System: You are helpful assistant. Answer using ONLY provided context.
         Do not hallucinate.
 
 User: Context:
       [Retrieved chunks joined]
-      
+
       Question: [User query]
-      
+
       Answer:
 ```
 
 **Constraints**:
+
 - Context limited to 4000 tokens
 - Temperature: 0.3 (low randomness)
 - Max tokens: 500
@@ -213,6 +242,7 @@ User: Context:
 #### Endpoints Design
 
 **POST /upload**
+
 - Input: MultipartForm with files
 - Process:
   1. Read files (memory-limited to 100MB total)
@@ -224,6 +254,7 @@ User: Context:
 - Storage: In-memory `sessions` dict
 
 **POST /query**
+
 - Input: Query string + session ID
 - Process:
   1. Retrieve top-5 relevant chunks
@@ -233,10 +264,12 @@ User: Context:
 - Output: Answer + Entities + Graph + Snippets
 
 **GET /status**
+
 - Input: None
 - Output: Health status
 
 **POST /clear**
+
 - Input: Session ID
 - Output: Confirmation
 
@@ -254,16 +287,19 @@ class RAGSession:
 ```
 
 Sessions stored in global dict (in-memory):
+
 ```python
 sessions[session_id] = RAGSession(session_id)
 ```
 
 **Limitations**:
+
 - Sessions lost on restart
 - No concurrent session isolation
 - Memory accumulates with multiple sessions
 
 **For Production**:
+
 - Use Redis or PostgreSQL
 - Implement garbage collection
 - Add session timeout
@@ -356,36 +392,38 @@ Frontend: Render answer, graph, entities
 
 ### 4.1 Processing Times (Benchmarks)
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Upload 5 files (1.5MB total) | 10-15s | Includes chunking, embedding |
-| Embed single chunk (300 words) | ~100ms | SentenceTransformers |
-| FAISS search (k=5) | ~50ms | Cosine similarity |
-| NER on chunk | ~200ms | spaCy pipeline |
-| Query → Answer | 3-10s | Mostly LLM API latency |
-| **Total end-to-end query** | **3-10s** | Depends on LLM |
+| Operation                      | Time      | Notes                        |
+| ------------------------------ | --------- | ---------------------------- |
+| Upload 5 files (1.5MB total)   | 10-15s    | Includes chunking, embedding |
+| Embed single chunk (300 words) | ~100ms    | SentenceTransformers         |
+| FAISS search (k=5)             | ~50ms     | Cosine similarity            |
+| NER on chunk                   | ~200ms    | spaCy pipeline               |
+| Query → Answer                 | 3-10s     | Mostly LLM API latency       |
+| **Total end-to-end query**     | **3-10s** | Depends on LLM               |
 
 ### 4.2 Memory Usage
 
-| Component | Per 1000 Chunks | Per 10000 Chunks |
-|-----------|-----------------|------------------|
-| FAISS Index | ~1.5MB | ~15MB |
-| Text Cache | ~500KB-1MB | ~5-10MB |
-| Embeddings (cached) | ~1.5MB | ~15MB |
-| Entity Cache | ~100-300KB | ~1-3MB |
-| NetworkX Graph | ~200-500KB | ~2-5MB |
-| **Total** | **~4-6MB** | **~40-60MB** |
+| Component           | Per 1000 Chunks | Per 10000 Chunks |
+| ------------------- | --------------- | ---------------- |
+| FAISS Index         | ~1.5MB          | ~15MB            |
+| Text Cache          | ~500KB-1MB      | ~5-10MB          |
+| Embeddings (cached) | ~1.5MB          | ~15MB            |
+| Entity Cache        | ~100-300KB      | ~1-3MB           |
+| NetworkX Graph      | ~200-500KB      | ~2-5MB           |
+| **Total**           | **~4-6MB**      | **~40-60MB**     |
 
 ## 5. Security Architecture
 
 ### 5.1 Input Validation
 
 **File Upload**:
+
 - Accepted types: PDF, TXT, MD only
 - Max size: 100MB per file (enforce in production)
 - File validation: Check MIME type
 
 **Query Input**:
+
 - Min length: 1 character
 - Max length: 1000 characters
 - Sanitization: Pydantic models handle escaping
@@ -400,11 +438,13 @@ Frontend: Render answer, graph, entities
 ### 5.3 CORS & API Security
 
 **Current CORS Policy**:
+
 ```python
 allow_origins=["*"]  # ⚠️ For development only
 ```
 
 **For Production**:
+
 ```python
 allow_origins=[
     "https://yourdomain.com",
@@ -417,6 +457,7 @@ allow_origins=[
 ### 6.1 Horizontal Scaling
 
 Current architecture supports:
+
 - Single process, single machine
 - Limited by RAM for in-memory storage
 - ~100k chunks max on 8GB RAM
@@ -424,12 +465,14 @@ Current architecture supports:
 For scaling:
 
 1. **Session Persistence**:
+
    ```
    Redis: Store FAISS indices
    PostgreSQL: Store chunks, entities, graphs
    ```
 
 2. **Async Processing**:
+
    ```
    Celery: Queue long-running uploads
    Message Broker: RabbitMQ
@@ -466,9 +509,9 @@ except Exception as e:
 
 ```javascript
 try {
-    const result = await api.post('/query', data);
+  const result = await api.post("/query", data);
 } catch (err) {
-    setError(err.response?.data?.detail || 'Failed');
+  setError(err.response?.data?.detail || "Failed");
 }
 ```
 
@@ -498,11 +541,13 @@ try {
 ### 9.1 Docker Containerization
 
 **Backend Image**:
+
 - Base: `python:3.12-slim`
 - Size: ~800MB (with dependencies)
 - Includes spaCy model
 
 **Frontend Image**:
+
 - Build stage: Node 20 + build tools
 - Runtime stage: Node 20 + serve
 - Size: ~200MB
@@ -515,7 +560,7 @@ services:
     build: Dockerfile.backend
     ports: 8000
     healthcheck: /status endpoint
-    
+
   frontend:
     build: Dockerfile.frontend
     ports: 3000
@@ -532,6 +577,7 @@ VITE_API_URL=http://localhost:8000
 ## 10. Future Architecture Improvements
 
 ### 10.1 Caching Layer
+
 ```
 Redis Cache
   - Embeddings (prevent recomputation)
@@ -540,6 +586,7 @@ Redis Cache
 ```
 
 ### 10.2 Database Integration
+
 ```
 PostgreSQL
   - Persistent indices
@@ -549,6 +596,7 @@ PostgreSQL
 ```
 
 ### 10.3 Advanced Features
+
 ```
 - Vector database (Pinecone, Weaviate)
 - Full-text search (Elasticsearch)
